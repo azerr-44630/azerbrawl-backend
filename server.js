@@ -13,6 +13,7 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(express.json());
+app.get("/", (req, res) => res.send("ClashAzeri API Backend Server Aktivdir!"));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
