@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const { getJson } = require('serpapi');
-const { pool, initDb } = require('./db'); // əvvəlki: require('./database')
+const { pool, initDb } = require('./db');
 
 const app = express();
 const server = http.createServer(app);
@@ -38,7 +38,6 @@ app.post('/api/auth/send-otp', async (req, res) => {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
   try {
-    // əvvəlki: INSERT OR REPLACE (sqlite) -> ON CONFLICT DO UPDATE (postgres)
     await pool.query(
       `INSERT INTO otp_codes (email, code, attempts, expires_at)
        VALUES ($1, $2, 0, $3)
@@ -56,7 +55,6 @@ app.post('/api/auth/send-otp', async (req, res) => {
 
     res.json({ success: true, message: 'Kod Gmail ünvanınıza göndərildi.' });
   } catch (err) {
-    // mail xətası ilə DB xətasını ayırmaq istəsəniz err.code-a görə branch edə bilərsiniz
     res.status(500).json({ error: 'Baza xətası və ya mail göndərilə bilmədi.' });
   }
 });
@@ -97,7 +95,6 @@ app.post('/api/auth/verify', async (req, res) => {
         [email, hashedPassword]
       );
     } catch (insertErr) {
-      // Postgres unikal məhdudiyyət pozuntusu kodu: 23505
       if (insertErr.code === '23505') {
         return res.status(400).json({ error: 'Bu email artıq qeydiyyatdan keçib.' });
       }
