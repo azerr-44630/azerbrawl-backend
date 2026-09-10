@@ -22,16 +22,28 @@ app.use(cookieParser());
 const otpLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
-  message: { error: 'Çoxlu sorğu gönderildi. Xahiş olunur 15 dəqiqə gözləyin.' }
+  message: { error: 'Çoxlu sorğu gönderildi. 15 dəqiqə gözləyin.' }
 });
 
-app.get("/", (req, res) => res.send("ClashAzeri API Backend Server Aktivdir!"));
+const authenticateToken = (req, res, next) => {
+  const token = req.cookies.auth_token || req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'İcazə verilmədi: Token yoxdur' });
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Etibarsız Token' });
+    req.user = user;
+    next();
+  });
+};
+
+app.get("/", (req, res) => res.send("ClashAzeri Full API Server Active!"));
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS }
 });
 
+// OTP Göndərmə
 app.post('/api/auth/send-otp', otpLimiter, async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ error: 'Email daxil edilməlidir.' });
@@ -52,17 +64,18 @@ app.post('/api/auth/send-otp', otpLimiter, async (req, res) => {
       from: process.env.GMAIL_USER,
       to: email,
       subject: 'AzerBrawl Təsdiq Kodu',
-      text: `Qeydiyyat/Giriş təsdiq kodunuz: ${code}`
+      text: `Təsdiq kodunuz: ${code}`
     });
 
-    res.json({ success: true, message: 'Kod Gmail ünvanınıza göndərildi.' });
+    res.json({ success: true, message: 'Kod göndərildi.' });
   } catch (err) {
-    res.status(500).json({ error: 'Baza xətası və ya mail göndərilə bilmədi.' });
+    res.status(500).json({ error: 'Mail göndərilə bilmədi.' });
   }
 });
 
+// Qeydiyyat və Giriş (Referal dəstəkli)
 app.post('/api/auth/verify', async (req, res) => {
-  const { email, code, password } = req.body;
+  const { email, code, password, refCode } = req.body;
 
   try {
     const { rows } = await pool.query(`SELECT * FROM otp_codes WHERE email = $1`, [email]);
@@ -89,9 +102,22 @@ app.post('/api/auth/verify', async (req, res) => {
 
     if (!user) {
       const hashedPassword = await bcrypt.hash(password, 10);
+      const myRefCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      
+      let inviterId = null;
+      if (refCode) {
+        const inviterRes = await pool.query(`SELECT id FROM users WHERE referral_code = $1`, [refCode]);
+        if (inviterRes.rows[0]) {
+          inviterId = inviterRes.rows[0].id;
+          await pool.query(`UPDATE users SET tickets = tickets + 1 WHERE id = $1`, [inviterId]);
+        }
+      }
+
       const newUser = await pool.query(
-        `INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email, role, tickets, banned_until`,
-        [email, hashedPassword]
+        `INSERT INTO users (email, password, referral_code, referred_by, tickets) 
+         VALUES ($1, $2, $3, $4, $5) 
+         RETURNING id, email, role, tickets, player_tag, referral_code`,
+        [email, hashedPassword, myRefCode, inviterId, refCode ? 1 : 0]
       );
       user = newUser.rows[0];
     }
@@ -111,13 +137,99 @@ app.post('/api/auth/verify', async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    res.json({
-      success: true,
-      token,
-      user: { id: user.id, email: user.email, role: user.role, tickets: user.tickets }
-    });
+    res.json({ success: true, token, user });
   } catch (err) {
     res.status(500).json({ error: 'Daxili server xətası.' });
+  }
+});
+
+// 2.1 Player Tag Yeniləmə
+app.post('/api/user/tag', authenticateToken, async (req, res) => {
+  const { playerTag } = req.body;
+  try {
+    await pool.query(`UPDATE users SET player_tag = $1 WHERE id = $2`, [playerTag, req.user.id]);
+    res.json({ success: true, playerTag });
+  } catch (err) {
+    res.status(500).json({ error: 'Tag yadda saxlanıla bilmədi.' });
+  }
+});
+
+// 1. Turnirlər
+app.get('/api/tournaments', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`SELECT * FROM tournaments ORDER BY created_at DESC`);
+    res.json({ tournaments: rows });
+  } catch (err) {
+    res.status(500).json({ error: 'Turnirlər gətirilmədi.' });
+  }
+});
+
+app.post('/api/tournaments/join', authenticateToken, async (req, res) => {
+  const { tournamentId } = req.body;
+  try {
+    const userRes = await pool.query(`SELECT tickets FROM users WHERE id = $1`, [req.user.id]);
+    const user = userRes.rows[0];
+    
+    if (user.tickets < 1) return res.status(400).json({ error: 'Kifayət qədər biletiniz yoxdur.' });
+
+    await pool.query(`UPDATE users SET tickets = tickets - 1 WHERE id = $1`, [req.user.id]);
+    await pool.query(`INSERT INTO tournament_participants (tournament_id, user_id) VALUES ($1, $2)`, [tournamentId, req.user.id]);
+    
+    res.json({ success: true, message: 'Turnirə qatıldınız!' });
+  } catch (err) {
+    res.status(400).json({ error: 'Turnirə qatılmaq mümkün olmadı və ya artıq qatılmısınız.' });
+  }
+});
+
+// 4.1 Destə (Deck) Paylaşımı
+app.get('/api/decks', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT d.*, u.email FROM decks d 
+      JOIN users u ON d.user_id = u.id 
+      ORDER BY d.likes DESC LIMIT 20
+    `);
+    res.json({ decks: rows });
+  } catch (err) {
+    res.status(500).json({ error: 'Destələr gətirilmədi.' });
+  }
+});
+
+app.post('/api/decks', authenticateToken, async (req, res) => {
+  const { title, game, cardsJson } = req.body;
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO decks (user_id, title, game, cards_json) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [req.user.id, title, game, JSON.stringify(cardsJson)]
+    );
+    res.json({ success: true, deck: rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Destə saxlanılmadı.' });
+  }
+});
+
+// 5. Admin Paneli Endpoint-ləri
+app.get('/api/admin/users', authenticateToken, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'İcazəniz yoxdur.' });
+  try {
+    const { rows } = await pool.query(`SELECT id, email, role, tickets, banned_until, player_tag FROM users`);
+    res.json({ users: rows });
+  } catch (err) {
+    res.status(500).json({ error: 'İstifadəçilər gətirilmədi.' });
+  }
+});
+
+app.post('/api/admin/create-tournament', authenticateToken, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'İcazəniz yoxdur.' });
+  const { title, game, ticketPrice, maxPlayers } = req.body;
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO tournaments (title, game, ticket_price, max_players) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [title, game, ticketPrice || 1, maxPlayers || 16]
+    );
+    res.json({ success: true, tournament: rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Turnir yaradılmadı.' });
   }
 });
 
@@ -131,6 +243,7 @@ app.get('/api/news', (req, res) => {
   });
 });
 
+// Socket.IO Çat
 const LINK_REGEX = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9]+\.[a-zA-Z]{2,})/gi;
 
 io.use((socket, next) => {
