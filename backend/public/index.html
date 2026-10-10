@@ -1,0 +1,2500 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClashAzeri v3 — Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       CLASHAZERI v3 — DESIGN SYSTEM
+       ═══════════════════════════════════════════════════════════ */
+    :root {
+      --bg-deep: #060606;
+      --bg-panel: #101010;
+      --bg-panel-2: #181818;
+      --bg-panel-3: #1E1E1E;
+      --border-steel: #2A2A2A;
+      --border-soft: rgba(255, 255, 255, 0.06);
+      --accent-gold: #C5A059;
+      --accent-gold-soft: rgba(197, 160, 89, 0.15);
+      --accent-platinum: #E5E4E2;
+      --text-main: #D1D1D1;
+      --text-muted: #7A7A7A;
+      --danger: #8B0000;
+      --danger-bright: #FF4444;
+      --success: #4CAF50;
+      --success-soft: rgba(76, 175, 80, 0.15);
+      --warn-soft: rgba(197, 160, 89, 0.15);
+
+      --cut-corner: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+      --cut-corner-sm: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+
+      --shadow-gold: 0 0 24px rgba(197, 160, 89, 0.15);
+      --shadow-deep: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-main);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(197, 160, 89, 0.05) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(229, 228, 226, 0.03) 0%, transparent 45%);
+      z-index: 0;
+    }
+
+    #app { position: relative; z-index: 1; min-height: 100vh; }
+
+    button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+    input { font-family: inherit; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ═══════════════════════════════════════════════════════════
+       UTILITIES
+       ═══════════════════════════════════════════════════════════ */
+    .clip { clip-path: var(--cut-corner); }
+    .clip-sm { clip-path: var(--cut-corner-sm); }
+    .hidden { display: none !important; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    .btn-gold {
+      padding: 12px 20px;
+      background: transparent;
+      border: 2px solid var(--accent-gold);
+      color: var(--accent-gold);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 12px;
+      clip-path: var(--cut-corner-sm);
+      transition: all 0.2s;
+    }
+    .btn-gold:hover:not(:disabled) {
+      background: var(--accent-gold);
+      color: #000;
+      box-shadow: var(--shadow-gold);
+    }
+    .btn-gold:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .btn-ghost {
+      padding: 10px 16px;
+      border: 1px solid var(--border-steel);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      clip-path: var(--cut-corner-sm);
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+
+    .btn-danger {
+      padding: 10px 16px;
+      border: 2px solid rgba(255, 68, 68, 0.4);
+      color: var(--danger-bright);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      clip-path: var(--cut-corner-sm);
+      transition: all 0.2s;
+    }
+    .btn-danger:hover { background: rgba(255, 68, 68, 0.1); border-color: var(--danger-bright); }
+
+    .input-dark {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-steel);
+      color: var(--accent-platinum);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-dark:focus { border-color: var(--accent-gold); }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+    }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       BOOT SCREEN
+       ═══════════════════════════════════════════════════════════ */
+    .boot-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 20px;
+    }
+    .boot-logo {
+      font-size: 80px;
+      font-weight: 900;
+      letter-spacing: -4px;
+      color: var(--accent-gold);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.98); }
+    }
+    .boot-text {
+      font-size: 10px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .boot-bar {
+      width: 200px;
+      height: 2px;
+      background: var(--border-steel);
+      overflow: hidden;
+    }
+    .boot-bar::after {
+      content: '';
+      display: block;
+      width: 40%;
+      height: 100%;
+      background: var(--accent-gold);
+      animation: slide 1.2s ease-in-out infinite;
+    }
+    @keyframes slide {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(300%); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       AUTH PAGE
+       ═══════════════════════════════════════════════════════════ */
+    .auth-shell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-steel);
+      clip-path: var(--cut-corner);
+      padding: 36px 32px;
+      box-shadow: var(--shadow-deep);
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .auth-brand-main {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+    }
+    .auth-brand-main span { color: var(--accent-gold); }
+    .auth-subtitle {
+      text-align: center;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+    .auth-step-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .auth-step-desc code {
+      color: var(--accent-gold);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+    .auth-error {
+      color: var(--danger-bright);
+      font-size: 12px;
+      text-align: center;
+      margin-top: 16px;
+      min-height: 16px;
+      line-height: 1.4;
+    }
+    .auth-info {
+      color: var(--accent-gold);
+      font-size: 12px;
+      text-align: center;
+      margin-top: 16px;
+      min-height: 16px;
+      line-height: 1.4;
+    }
+    .auth-toggle {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 20px;
+    }
+    .auth-toggle button {
+      color: var(--accent-gold);
+      text-decoration: underline;
+      font-weight: 700;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       APP LAYOUT
+       ═══════════════════════════════════════════════════════════ */
+    .app-layout { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(6, 6, 6, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--accent-gold);
+    }
+    .top-header-inner {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .brand span.gold { color: var(--accent-gold); }
+    .brand .ver {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-left: 8px;
+    }
+    .top-stats {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .stat-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--bg-panel-2);
+      border: 1px solid var(--border-steel);
+      clip-path: var(--cut-corner-sm);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .stat-chip .ico { color: var(--accent-gold); font-size: 13px; }
+    .stat-chip .val { color: var(--accent-platinum); }
+    .stat-chip .lbl {
+      color: var(--text-muted);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .icon-btn {
+      padding: 8px;
+      border: 1px solid var(--border-steel);
+      color: var(--text-muted);
+      clip-path: var(--cut-corner-sm);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-btn:hover { color: var(--accent-gold); border-color: var(--accent-gold); }
+
+    .main-nav {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .main-nav::-webkit-scrollbar { display: none; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-link:hover { color: var(--accent-platinum); }
+    .nav-link.active {
+      color: var(--accent-gold);
+      border-bottom-color: var(--accent-gold);
+    }
+
+    .page-content {
+      flex: 1;
+      max-width: 1500px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 28px 24px;
+    }
+
+    .app-footer {
+      border-top: 1px solid var(--border-soft);
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       HOME PAGE
+       ═══════════════════════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      padding: 40px 32px;
+      background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%);
+      border: 1px solid var(--border-steel);
+      clip-path: var(--cut-corner);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(197, 160, 89, 0.12), transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .hero-title .hash { color: var(--text-muted); }
+    .hero-title .mask { color: var(--accent-gold); }
+    .hero-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.7;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      padding: 20px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+    }
+    .stat-card .ico { font-size: 26px; margin-bottom: 10px; }
+    .stat-card .num {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--accent-gold);
+      letter-spacing: -1px;
+    }
+    .stat-card .num.white { color: var(--accent-platinum); }
+    .stat-card .lbl {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 700;
+    }
+
+    .section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      color: var(--accent-gold);
+      font-weight: 800;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent-gold-soft), transparent);
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .quick-card {
+      padding: 20px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+      transition: all 0.25s;
+      cursor: pointer;
+      display: block;
+    }
+    .quick-card:hover {
+      border-color: var(--accent-gold-soft);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-gold);
+    }
+    .quick-card .ico {
+      font-size: 22px;
+      color: var(--accent-gold);
+      margin-bottom: 12px;
+    }
+    .quick-card .title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .quick-card .desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .home-split {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    .list-item:hover { border-color: var(--accent-gold-soft); }
+    .list-item .title { font-weight: 700; font-size: 14px; }
+    .list-item .meta {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 4px;
+    }
+    .list-item .meta .gold { color: var(--accent-gold); }
+    .list-item .arrow { color: var(--accent-gold); font-size: 18px; }
+
+    /* News feed */
+    .news-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+      max-height: 640px;
+      display: flex;
+      flex-direction: column;
+    }
+    .news-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-soft);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--accent-gold);
+      font-weight: 800;
+    }
+    .news-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+    }
+    .news-item {
+      display: block;
+      padding: 12px;
+      background: var(--bg-panel-2);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner-sm);
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    .news-item:hover { border-color: var(--accent-gold-soft); }
+    .news-item .meta {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+    .news-item .title {
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--text-main);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       PROFILE PAGE
+       ═══════════════════════════════════════════════════════════ */
+    .profile-grid {
+      display: grid;
+      gap: 20px;
+      max-width: 900px;
+    }
+    .panel-body { padding: 24px; }
+
+    .kv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .kv-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .kv-value {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--accent-gold);
+      letter-spacing: -0.5px;
+    }
+    .kv-value.mono { font-family: 'JetBrains Mono', monospace; font-size: 18px; }
+    .kv-hint {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .input-row { display: flex; gap: 8px; }
+    .input-row .input-dark { flex: 1; }
+
+    .ref-box {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-soft);
+    }
+    .ref-code {
+      font-size: 28px;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-gold);
+      letter-spacing: 4px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .ref-code .copy-btn {
+      color: var(--text-muted);
+      padding: 6px;
+      transition: color 0.2s;
+    }
+    .ref-code .copy-btn:hover { color: var(--accent-gold); }
+
+    .device-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--bg-panel-2);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner-sm);
+      margin-bottom: 8px;
+      gap: 12px;
+    }
+    .device-row .ico { color: var(--accent-gold); }
+    .device-row .label { font-size: 13px; font-weight: 700; }
+    .device-row .meta {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .device-row .kill {
+      color: rgba(255, 68, 68, 0.5);
+      padding: 6px;
+      transition: color 0.2s;
+    }
+    .device-row .kill:hover { color: var(--danger-bright); }
+
+    /* ═══════════════════════════════════════════════════════════
+       PROGRESS PAGE
+       ═══════════════════════════════════════════════════════════ */
+    .level-panel {
+      position: relative;
+      padding: 32px;
+      background: linear-gradient(135deg, var(--bg-panel-2), var(--bg-panel));
+      border: 1px solid var(--border-steel);
+      clip-path: var(--cut-corner);
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .level-panel::after {
+      content: attr(data-level);
+      position: absolute;
+      right: -20px;
+      top: -30px;
+      font-size: 200px;
+      font-weight: 900;
+      color: rgba(197, 160, 89, 0.05);
+      line-height: 1;
+      pointer-events: none;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .level-eyebrow {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .level-big {
+      font-size: 72px;
+      font-weight: 900;
+      color: var(--accent-gold);
+      line-height: 1;
+      letter-spacing: -3px;
+      margin-bottom: 24px;
+    }
+    .level-big .slash {
+      color: var(--text-muted);
+      font-size: 40px;
+      font-weight: 400;
+      margin-left: 8px;
+    }
+    .progress-bar-wrap { max-width: 500px; }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 6px;
+      background: var(--bg-deep);
+      overflow: hidden;
+      clip-path: var(--cut-corner-sm);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-gold-soft), var(--accent-gold));
+      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .progress-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    .ach-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .ach-card {
+      padding: 20px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+      transition: all 0.2s;
+    }
+    .ach-card.locked { opacity: 0.45; }
+    .ach-card.unlocked {
+      border-color: var(--accent-gold-soft);
+      background: linear-gradient(135deg, var(--bg-panel), rgba(197, 160, 89, 0.05));
+    }
+    .ach-card .ico { font-size: 32px; margin-bottom: 10px; }
+    .ach-card.locked .ico { filter: grayscale(1); }
+    .ach-card .title {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .ach-card .desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .ach-card .xp {
+      font-size: 10px;
+      color: var(--accent-gold);
+      margin-top: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+    .ach-card .date {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       TOURNAMENTS PAGE
+       ═══════════════════════════════════════════════════════════ */
+    .tour-page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .tour-page-title {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+    }
+    .tour-page-title .dot { color: var(--accent-gold); }
+
+    .tour-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .tour-card {
+      padding: 22px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all 0.25s;
+    }
+    .tour-card:hover { border-color: var(--accent-gold-soft); transform: translateY(-3px); }
+    .tour-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .tour-status {
+      display: inline-block;
+      padding: 3px 10px;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 800;
+      clip-path: var(--cut-corner-sm);
+    }
+    .tour-status.open { background: var(--success-soft); color: #7CFC00; }
+    .tour-status.closed { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+    .tour-title { font-size: 17px; font-weight: 900; margin-top: 6px; }
+    .tour-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 4px;
+    }
+    .tour-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+    .tour-stat .ico { font-size: 12px; color: var(--accent-gold); margin-bottom: 3px; }
+    .tour-stat .val { font-size: 13px; font-weight: 900; color: var(--accent-platinum); }
+    .tour-stat .lbl {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .tour-time {
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       CHAT PAGE
+       ═══════════════════════════════════════════════════════════ */
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+      height: calc(100vh - 260px);
+      min-height: 480px;
+    }
+    .rooms-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+      padding: 12px;
+      overflow-y: auto;
+    }
+    .rooms-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--accent-gold);
+      font-weight: 800;
+      padding: 4px 8px 10px;
+    }
+    .room-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+      text-align: left;
+      margin-bottom: 2px;
+    }
+    .room-btn:hover { color: var(--accent-platinum); background: rgba(255, 255, 255, 0.03); }
+    .room-btn.active {
+      color: var(--accent-gold);
+      border-left-color: var(--accent-gold);
+      background: var(--accent-gold-soft);
+    }
+
+    .chat-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-head {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .chat-head .title { font-size: 13px; font-weight: 800; display: flex; gap: 8px; align-items: center; }
+    .chat-head .title .ico { color: var(--accent-gold); }
+    .chat-head .count { font-size: 10px; color: var(--text-muted); letter-spacing: 2px; }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    .msg {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+      animation: msgIn 0.2s ease-out;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateX(-6px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .msg-avatar {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+      clip-path: var(--cut-corner-sm);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 1px;
+    }
+    .msg-avatar.user { background: var(--accent-gold-soft); color: var(--accent-gold); }
+    .msg-avatar.admin { background: rgba(255, 68, 68, 0.15); color: var(--danger-bright); }
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .msg-user {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .msg-user.user { color: var(--accent-gold); }
+    .msg-user.admin { color: var(--danger-bright); }
+    .msg-time { font-size: 9px; color: var(--text-muted); }
+    .msg-text {
+      font-size: 13.5px;
+      color: var(--text-main);
+      word-break: break-word;
+      line-height: 1.5;
+    }
+
+    .chat-input-row {
+      padding: 14px;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      gap: 8px;
+    }
+    .chat-input-row .input-dark { flex: 1; }
+
+    .chat-banned {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 40px;
+      text-align: center;
+      gap: 12px;
+    }
+    .chat-banned .ico { font-size: 60px; }
+    .chat-banned .title {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--danger-bright);
+      letter-spacing: 2px;
+    }
+    .chat-banned .desc { font-size: 13px; color: var(--text-muted); max-width: 400px; }
+
+    /* ═══════════════════════════════════════════════════════════
+       ADMIN PAGE
+       ═══════════════════════════════════════════════════════════ */
+    .admin-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .admin-tab {
+      padding: 10px 18px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border: 1px solid var(--border-steel);
+      color: var(--text-muted);
+      clip-path: var(--cut-corner-sm);
+      transition: all 0.2s;
+    }
+    .admin-tab:hover { color: var(--accent-platinum); }
+    .admin-tab.active {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+      background: var(--accent-gold-soft);
+    }
+
+    .admin-warn {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 12px 16px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      border-left: 3px solid var(--accent-gold);
+      clip-path: var(--cut-corner-sm);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .stats-admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .stats-admin-card {
+      padding: 22px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+    }
+    .stats-admin-card .lbl {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .stats-admin-card .num {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--accent-gold);
+      letter-spacing: -1.5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .admin-table-wrap {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-soft);
+      clip-path: var(--cut-corner);
+      overflow: hidden;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .admin-table thead {
+      background: var(--bg-panel-2);
+      border-bottom: 1px solid var(--accent-gold-soft);
+    }
+    .admin-table thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-gold);
+      font-weight: 800;
+    }
+    .admin-table tbody tr {
+      border-bottom: 1px solid var(--border-soft);
+      transition: background 0.15s;
+    }
+    .admin-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+    .admin-table tbody td {
+      padding: 11px 14px;
+      vertical-align: middle;
+    }
+    .admin-table .cell-mask {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-gold);
+      font-size: 12px;
+    }
+    .admin-table .cell-muted { color: var(--text-muted); font-size: 11px; }
+    .admin-table .cell-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .action-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      clip-path: var(--cut-corner-sm);
+    }
+    .action-pill.register { background: rgba(59, 130, 246, 0.15); color: #60A5FA; }
+    .action-pill.login_success { background: rgba(76, 175, 80, 0.15); color: #7CFC00; }
+    .action-pill.login_fail { background: rgba(255, 68, 68, 0.15); color: #FF8888; }
+    .action-pill.login_device { background: var(--accent-gold-soft); color: var(--accent-gold); }
+    .action-pill.join_tournament { background: rgba(168, 85, 247, 0.15); color: #C084FC; }
+    .action-pill.auto_ban_link { background: rgba(255, 68, 68, 0.25); color: #FFAAAA; }
+    .action-pill.default { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════════════════════
+       TOAST
+       ═══════════════════════════════════════════════════════════ */
+    .toast-wrap {
+      position: fixed;
+      top: 84px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 14px 20px;
+      background: var(--bg-panel-2);
+      border: 1px solid var(--border-steel);
+      border-left: 3px solid var(--accent-gold);
+      color: var(--text-main);
+      font-size: 13px;
+      clip-path: var(--cut-corner-sm);
+      box-shadow: var(--shadow-deep);
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+      min-width: 240px;
+      max-width: 380px;
+    }
+    .toast.error { border-left-color: var(--danger-bright); }
+    .toast.success { border-left-color: var(--success); }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .home-split { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(3, 1fr); }
+      .quick-grid { grid-template-columns: 1fr; }
+      .chat-layout { grid-template-columns: 1fr; height: auto; }
+      .rooms-panel { max-height: 200px; }
+      .chat-panel { height: 560px; }
+    }
+    @media (max-width: 640px) {
+      .top-header-inner { padding: 10px 16px; }
+      .page-content { padding: 20px 16px; }
+      .hero { padding: 28px 20px; }
+      .hero-title { font-size: 32px; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .kv-grid { grid-template-columns: 1fr; }
+      .brand .ver { display: none; }
+      .level-big { font-size: 52px; }
+      .level-panel::after { font-size: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <div class="boot-screen">
+      <div class="boot-logo">CA</div>
+      <div class="boot-text">Sistem yüklənir</div>
+      <div class="boot-bar"></div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+  <script>
+    /* ═══════════════════════════════════════════════════════════
+       CLASHAZERI v3 — FRONTEND SPA
+       ═══════════════════════════════════════════════════════════ */
+
+    // ─── KONFİQ ────────────────────────────────────────────────
+    const API_BASE = window.__API_BASE__ || ''; // Eyni domendə boş qalır
+
+    // ─── STATE ─────────────────────────────────────────────────
+    const State = {
+      user: null,
+      page: 'boot',
+      data: {
+        tournaments: [],
+        news: [],
+        devices: [],
+        achievements: [],
+        adminActivities: [],
+        adminUsers: [],
+        adminDevices: [],
+        adminStats: null,
+      },
+      chat: {
+        socket: null,
+        room: 'general',
+        messages: [],
+        banned: null,
+      },
+      auth: {
+        step: 'form', // form | otp | login
+        email: '',
+        phone: '',
+        emailCode: '',
+        phoneCode: '',
+        password: '',
+        refCode: '',
+      },
+    };
+
+    // ─── API HELPER ────────────────────────────────────────────
+    async function api(path, opts = {}) {
+      const res = await fetch(API_BASE + path, {
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+        ...opts,
+        body: opts.body ? JSON.stringify(opts.body) : undefined,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const err = new Error(data.error || 'Xəta baş verdi');
+        err.status = res.status;
+        err.code = data.code;
+        throw err;
+      }
+      return data;
+    }
+
+    // ─── TOAST ─────────────────────────────────────────────────
+    function toast(msg, type = 'info', duration = 3200) {
+      const el = document.createElement('div');
+      el.className = 'toast ' + type;
+      el.textContent = msg;
+      document.getElementById('toastWrap').appendChild(el);
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.3s, transform 0.3s';
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(20px)';
+        setTimeout(() => el.remove(), 300);
+      }, duration);
+    }
+
+    // ─── FINGERPRINT ───────────────────────────────────────────
+    async function makeFingerprint() {
+      try {
+        const data = [
+          navigator.userAgent,
+          navigator.language,
+          `${screen.width}x${screen.height}`,
+          new Date().getTimezoneOffset(),
+          navigator.hardwareConcurrency || 0,
+        ].join('|');
+        const buf = new TextEncoder().encode(data);
+        const hash = await crypto.subtle.digest('SHA-256', buf);
+        return Array.from(new Uint8Array(hash))
+          .map((b) => b.toString(16).padStart(2, '0'))
+          .join('')
+          .slice(0, 64);
+      } catch {
+        return 'fp_' + Date.now();
+      }
+    }
+
+    // ─── ROUTER ────────────────────────────────────────────────
+    const ROUTES = {
+      '/': 'home',
+      '/profile': 'profile',
+      '/progress': 'progress',
+      '/tournaments': 'tournaments',
+      '/chat': 'chat',
+      '/admin': 'admin',
+    };
+
+    function currentPath() {
+      return (location.hash.replace(/^#/, '') || '/').split('?')[0];
+    }
+
+    function navigate(path) {
+      if (currentPath() === path) {
+        render();
+        return;
+      }
+      location.hash = path;
+    }
+
+    window.addEventListener('hashchange', render);
+
+    // ─── RENDER ────────────────────────────────────────────────
+    function render() {
+      const app = document.getElementById('app');
+      const path = currentPath();
+
+      // Boot
+      if (State.page === 'boot') {
+        app.innerHTML = `
+          <div class="boot-screen">
+            <div class="boot-logo">CA</div>
+            <div class="boot-text">Sistem yüklənir</div>
+            <div class="boot-bar"></div>
+          </div>`;
+        return;
+      }
+
+      // Auth
+      if (!State.user) {
+        if (path !== '/auth') {
+          navigate('/auth');
+          return;
+        }
+        renderAuth();
+        return;
+      }
+
+      // Protected routes
+      if (path === '/auth') {
+        navigate('/');
+        return;
+      }
+
+      const route = ROUTES[path];
+      if (!route) {
+        navigate('/');
+        return;
+      }
+
+      if (route === 'admin' && State.user.role !== 'admin') {
+        navigate('/');
+        return;
+      }
+
+      renderLayout(route);
+    }
+
+    // ─── AUTH PAGE ─────────────────────────────────────────────
+    function renderAuth() {
+      const a = State.auth;
+      const app = document.getElementById('app');
+
+      let stepHtml = '';
+      if (a.step === 'form') {
+        stepHtml = `
+          <div class="field">
+            <label>Email</label>
+            <input class="input-dark" id="auth-email" type="email"
+              placeholder="you@example.com" value="${a.email}" />
+          </div>
+          <div class="field">
+            <label>Telefon</label>
+            <input class="input-dark" id="auth-phone" type="tel"
+              placeholder="+994501234567" value="${a.phone}" />
+          </div>
+          <button class="btn-gold" id="auth-action" style="width:100%;margin-top:8px">
+            Kod Göndər
+          </button>
+          <div class="auth-toggle">
+            Hesabınız var?
+            <button id="auth-switch-login">Daxil olun</button>
+          </div>`;
+      } else if (a.step === 'otp') {
+        stepHtml = `
+          <div class="auth-step-desc">
+            <code>${a.email}</code> və <code>${a.phone}</code> ünvanlarına kod göndərildi.
+          </div>
+          <div class="field">
+            <label>Email OTP (6 rəqəm)</label>
+            <input class="input-dark mono" id="auth-email-otp" maxlength="6"
+              placeholder="000000" inputmode="numeric"
+              value="${a.emailCode}" style="letter-spacing:8px;font-size:18px;text-align:center" />
+          </div>
+          <div class="field">
+            <label>SMS OTP (6 rəqəm)</label>
+            <input class="input-dark mono" id="auth-phone-otp" maxlength="6"
+              placeholder="000000" inputmode="numeric"
+              value="${a.phoneCode}" style="letter-spacing:8px;font-size:18px;text-align:center" />
+          </div>
+          <div class="field">
+            <label>Şifrə (min 8 simvol)</label>
+            <input class="input-dark" id="auth-password" type="password"
+              placeholder="••••••••" value="${a.password}" />
+          </div>
+          <div class="field">
+            <label>Referal kod (istəyə görə)</label>
+            <input class="input-dark mono" id="auth-ref" placeholder="ABCD1234"
+              value="${a.refCode}" style="text-transform:uppercase" />
+          </div>
+          <button class="btn-gold" id="auth-action" style="width:100%;margin-top:8px">
+            Təsdiqlə və Qeydiyyatdan Keç
+          </button>
+          <div class="auth-toggle">
+            <button id="auth-back">← Geri qayıt</button>
+          </div>`;
+      } else if (a.step === 'login') {
+        stepHtml = `
+          <div class="field">
+            <label>Email</label>
+            <input class="input-dark" id="auth-email" type="email"
+              placeholder="you@example.com" value="${a.email}" />
+          </div>
+          <div class="field">
+            <label>Şifrə</label>
+            <input class="input-dark" id="auth-password" type="password"
+              placeholder="••••••••" value="${a.password}" />
+          </div>
+          <button class="btn-gold" id="auth-action" style="width:100%;margin-top:8px">
+            Daxil Ol
+          </button>
+          <div class="auth-toggle">
+            Hesabınız yoxdur?
+            <button id="auth-switch-register">Qeydiyyat</button>
+          </div>`;
+      }
+
+      app.innerHTML = `
+        <div class="auth-shell">
+          <div class="auth-card">
+            <div class="auth-brand">
+              <div class="auth-brand-main">CLASH<span>AZERI</span></div>
+            </div>
+            <div class="auth-subtitle">Command Center Access</div>
+            ${stepHtml}
+            <div class="auth-error" id="auth-error"></div>
+            <div class="auth-info" id="auth-info"></div>
+          </div>
+        </div>`;
+
+      bindAuthEvents();
+    }
+
+    function bindAuthEvents() {
+      const a = State.auth;
+      const errEl = document.getElementById('auth-error');
+      const infoEl = document.getElementById('auth-info');
+
+      function setErr(msg) { errEl.textContent = msg || ''; }
+      function setInfo(msg) { infoEl.textContent = msg || ''; }
+
+      // Canlı input sinxronizasiyası
+      const inputs = ['auth-email', 'auth-phone', 'auth-email-otp', 'auth-phone-otp', 'auth-password', 'auth-ref'];
+      inputs.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', (e) => {
+          const map = {
+            'auth-email': 'email',
+            'auth-phone': 'phone',
+            'auth-email-otp': 'emailCode',
+            'auth-phone-otp': 'phoneCode',
+            'auth-password': 'password',
+            'auth-ref': 'refCode',
+          };
+          a[map[id]] = e.target.value;
+        });
+      });
+
+      const action = document.getElementById('auth-action');
+      if (action) {
+        action.addEventListener('click', async () => {
+          setErr('');
+          if (a.step === 'form') await requestOtp();
+          else if (a.step === 'otp') await verifyOtp();
+          else if (a.step === 'login') await doLogin();
+        });
+      }
+
+      const swLogin = document.getElementById('auth-switch-login');
+      if (swLogin) swLogin.addEventListener('click', () => {
+        State.auth.step = 'login';
+        render();
+      });
+
+      const swReg = document.getElementById('auth-switch-register');
+      if (swReg) swReg.addEventListener('click', () => {
+        State.auth.step = 'form';
+        render();
+      });
+
+      const back = document.getElementById('auth-back');
+      if (back) back.addEventListener('click', () => {
+        State.auth.step = 'form';
+        render();
+      });
+
+      // OTP input avtomatik focus
+      ['auth-email-otp', 'auth-phone-otp'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', (e) => {
+          if (e.target.value.length === 6) {
+            const next = document.getElementById(i === 0 ? 'auth-phone-otp' : 'auth-password');
+            next?.focus();
+          }
+        });
+      });
+    }
+
+    async function requestOtp() {
+      const a = State.auth;
+      const err = document.getElementById('auth-error');
+      const info = document.getElementById('auth-info');
+      const btn = document.getElementById('auth-action');
+
+      if (!a.email || !a.phone) return (err.textContent = 'Email və telefon daxil edin');
+
+      btn.disabled = true; btn.textContent = 'Göndərilir...';
+      try {
+        await api('/api/auth/register/request', {
+          method: 'POST',
+          body: { email: a.email, phone: a.phone },
+        });
+        a.step = 'otp';
+        render();
+        setTimeout(() => {
+          const i = document.getElementById('auth-info');
+          if (i) i.textContent = '✓ Kodlar göndərildi (yoxlamaq üçün email/SMS-inizə baxın)';
+        }, 30);
+      } catch (e) {
+        err.textContent = e.message;
+        btn.disabled = false; btn.textContent = 'Kod Göndər';
+      }
+    }
+
+    async function verifyOtp() {
+      const a = State.auth;
+      const err = document.getElementById('auth-error');
+      const btn = document.getElementById('auth-action');
+
+      if (!a.emailCode || a.emailCode.length !== 6) return (err.textContent = 'Email OTP 6 rəqəm olmalıdır');
+      if (!a.phoneCode || a.phoneCode.length !== 6) return (err.textContent = 'SMS OTP 6 rəqəm olmalıdır');
+      if (!a.password || a.password.length < 8) return (err.textContent = 'Şifrə min 8 simvol olmalıdır');
+
+      btn.disabled = true; btn.textContent = 'Təsdiqlənir...';
+      try {
+        const fingerprint = await makeFingerprint();
+        const res = await api('/api/auth/register/verify', {
+          method: 'POST',
+          body: {
+            email: a.email,
+            phone: a.phone,
+            emailCode: a.emailCode,
+            phoneCode: a.phoneCode,
+            password: a.password,
+            refCode: a.refCode || undefined,
+            fingerprint,
+          },
+        });
+        State.user = res.user;
+        State.auth = { step: 'form', email: '', phone: '', emailCode: '', phoneCode: '', password: '', refCode: '' };
+        toast('Xoş gəldin, ' + res.user.mask, 'success');
+        navigate('/');
+      } catch (e) {
+        err.textContent = e.message;
+        btn.disabled = false; btn.textContent = 'Təsdiqlə və Qeydiyyatdan Keç';
+      }
+    }
+
+    async function doLogin() {
+      const a = State.auth;
+      const err = document.getElementById('auth-error');
+      const btn = document.getElementById('auth-action');
+
+      if (!a.email || !a.password) return (err.textContent = 'Email və şifrə daxil edin');
+
+      btn.disabled = true; btn.textContent = 'Daxil olur...';
+      try {
+        const fingerprint = await makeFingerprint();
+        const res = await api('/api/auth/login', {
+          method: 'POST',
+          body: { email: a.email, password: a.password, fingerprint },
+        });
+        State.user = res.user;
+        State.auth = { step: 'form', email: '', phone: '', emailCode: '', phoneCode: '', password: '', refCode: '' };
+        toast('Xoş gəldin, ' + res.user.mask, 'success');
+        navigate('/');
+      } catch (e) {
+        err.textContent = e.message;
+        btn.disabled = false; btn.textContent = 'Daxil Ol';
+      }
+    }
+
+    // ─── LAYOUT ────────────────────────────────────────────────
+    function renderLayout(route) {
+      const u = State.user;
+      const NAV = [
+        { path: '/', label: 'Ana Səhifə', icon: '⌂' },
+        { path: '/tournaments', label: 'Turnirlər', icon: '🏆' },
+        { path: '/progress', label: 'İnkişaf', icon: '📈' },
+        { path: '/chat', label: 'Çat', icon: '💬' },
+        { path: '/profile', label: 'Profil', icon: '◉' },
+      ];
+
+      const navHtml = NAV.map((n) => `
+        <a href="#${n.path}" class="nav-link ${currentPath() === n.path ? 'active' : ''}">
+          <span>${n.icon}</span> ${n.label}
+        </a>`).join('');
+
+      const adminHtml = u.role === 'admin'
+        ? `<a href="#/admin" class="nav-link ${currentPath() === '/admin' ? 'active' : ''}">
+             <span>⚙</span> Admin
+           </a>` : '';
+
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="app-layout">
+          <header class="top-header">
+            <div class="top-header-inner">
+              <a href="#/" class="brand">
+                CLASH<span class="gold">AZERI</span>
+                <span class="ver">v3</span>
+              </a>
+              <div class="top-stats">
+                <div class="stat-chip">
+                  <span class="ico">🎫</span>
+                  <span class="val">${u.tickets}</span>
+                  <span class="lbl">Bilet</span>
+                </div>
+                <div class="stat-chip">
+                  <span class="ico">⭐</span>
+                  <span class="val">Lv.${u.level}</span>
+                  <span class="lbl">${u.xp} XP</span>
+                </div>
+                <button class="icon-btn" id="btn-logout" title="Çıxış">⎋</button>
+              </div>
+            </div>
+            <nav class="main-nav">
+              ${navHtml}
+              ${adminHtml}
+            </nav>
+          </header>
+          <main class="page-content" id="pageContent"></main>
+          <footer class="app-footer">
+            ClashAzeri v3 · <span class="mono" style="color:var(--accent-gold)">${u.mask}</span> · ${new Date().getFullYear()}
+          </footer>
+        </div>`;
+
+      document.getElementById('btn-logout').addEventListener('click', doLogout);
+
+      // Route render
+      const pageEl = document.getElementById('pageContent');
+      switch (route) {
+        case 'home': renderHome(pageEl); break;
+        case 'profile': renderProfile(pageEl); break;
+        case 'progress': renderProgress(pageEl); break;
+        case 'tournaments': renderTournaments(pageEl); break;
+        case 'chat': renderChat(pageEl); break;
+        case 'admin': renderAdmin(pageEl); break;
+      }
+    }
+
+    async function doLogout() {
+      try { await api('/api/auth/logout', { method: 'POST' }); } catch {}
+      if (State.chat.socket) {
+        State.chat.socket.disconnect();
+        State.chat.socket = null;
+      }
+      State.user = null;
+      State.chat.messages = [];
+      navigate('/auth');
+      toast('Çıxış edildi');
+    }
+
+    // ─── HOME ──────────────────────────────────────────────────
+    async function renderHome(el) {
+      const u = State.user;
+
+      el.innerHTML = `
+        <div class="hero">
+          <div class="hero-eyebrow">Xoş gəldin, əsgər</div>
+          <h1 class="hero-title">
+            <span class="hash">#</span><span class="mask">${u.mask}</span>
+          </h1>
+          <p class="hero-desc">
+            Komandanı hazırla, turnirə qoşul, nailiyyətləri aç.
+            Hər qələbə səni daha güclü edir.
+          </p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="ico">🎫</div>
+            <div class="num">${u.tickets}</div>
+            <div class="lbl">Bilet</div>
+          </div>
+          <div class="stat-card">
+            <div class="ico">⭐</div>
+            <div class="num">${u.level}</div>
+            <div class="lbl">Səviyyə</div>
+          </div>
+          <div class="stat-card">
+            <div class="ico">📊</div>
+            <div class="num white">${u.xp}</div>
+            <div class="lbl">Təcrübə (XP)</div>
+          </div>
+        </div>
+
+        <div class="home-split">
+          <div>
+            <h2 class="section-title">Tez Keçidlər</h2>
+            <div class="quick-grid">
+              <a href="#/tournaments" class="quick-card">
+                <div class="ico">🏆</div>
+                <div class="title">Turnirlər</div>
+                <div class="desc">Aktiv yarışlar</div>
+              </a>
+              <a href="#/progress" class="quick-card">
+                <div class="ico">📈</div>
+                <div class="title">İnkişaf</div>
+                <div class="desc">Nailiyyətlər</div>
+              </a>
+              <a href="#/chat" class="quick-card">
+                <div class="ico">💬</div>
+                <div class="title">Çat</div>
+                <div class="desc">Komanda söhbəti</div>
+              </a>
+            </div>
+
+            <h2 class="section-title" style="margin-top:32px">Yaxınlaşan Turnirlər</h2>
+            <div id="home-tours">
+              <div class="cell-muted" style="padding:16px 0">Yüklənir...</div>
+            </div>
+          </div>
+
+          <div class="news-panel">
+            <div class="news-header">📡 Kəşfiyyat Məlumatları</div>
+            <div class="news-body" id="home-news">
+              <div class="cell-muted" style="text-align:center;padding:20px">Yüklənir...</div>
+            </div>
+          </div>
+        </div>`;
+
+      // Məlumatları yüklə
+      try {
+        const r = await api('/api/tournaments');
+        const tours = r.tournaments.slice(0, 4);
+        const wrap = document.getElementById('home-tours');
+        if (!tours.length) {
+          wrap.innerHTML = `<div class="list-item"><div class="title" style="color:var(--text-muted)">Hələ turnir yoxdur.</div></div>`;
+        } else {
+          wrap.innerHTML = tours.map((t) => `
+            <a href="#/tournaments" class="list-item">
+              <div>
+                <div class="title">${escapeHtml(t.title)}</div>
+                <div class="meta">
+                  ${escapeHtml(t.game)} · ${escapeHtml(t.mode)}
+                  · ${t.players}/${t.max_players}
+                  · <span class="gold">${t.prize_pool} mükafat</span>
+                </div>
+              </div>
+              <div class="arrow">→</div>
+            </a>`).join('');
+        }
+      } catch {
+        document.getElementById('home-tours').innerHTML =
+          `<div class="list-item"><div class="title" style="color:var(--text-muted)">Yüklənə bilmədi</div></div>`;
+      }
+
+      try {
+        const r = await api('/api/news');
+        const news = r.news.slice(0, 10);
+        const wrap = document.getElementById('home-news');
+        if (!news.length) {
+          wrap.innerHTML = `<div class="cell-muted" style="text-align:center;padding:20px">Xəbər yoxdur</div>`;
+        } else {
+          wrap.innerHTML = news.map((n) => `
+            <a href="${escapeAttr(n.link || '#')}" target="_blank" rel="noopener noreferrer" class="news-item">
+              <div class="meta">${escapeHtml(n.source || '')} ${n.date ? '· ' + escapeHtml(n.date) : ''}</div>
+              <div class="title">${escapeHtml(n.title || '')}</div>
+            </a>`).join('');
+        }
+      } catch {
+        document.getElementById('home-news').innerHTML =
+          `<div class="cell-muted" style="text-align:center;padding:20px">Yüklənə bilmədi</div>`;
+      }
+    }
+
+    // ─── PROFILE ───────────────────────────────────────────────
+    async function renderProfile(el) {
+      const u = State.user;
+      el.innerHTML = `
+        <h1 class="tour-page-title" style="margin-bottom:24px">PROFİL<span class="dot">.</span></h1>
+        <div class="profile-grid">
+
+          <section class="panel">
+            <div class="panel-body">
+              <h2 class="section-title">Kimlik</h2>
+              <div class="kv-grid">
+                <div>
+                  <div class="kv-label">İstifadəçi Maskı</div>
+                  <div class="kv-value mono">${u.mask}</div>
+                  <div class="kv-hint">Email və telefon bazada HMAC + AES ilə şifrələnib</div>
+                </div>
+                <div>
+                  <div class="kv-label">Oyunçu Tag</div>
+                  <div class="input-row">
+                    <input class="input-dark mono" id="profile-tag" placeholder="#ABC123"
+                      value="${escapeAttr(u.playerTag || '')}" />
+                    <button class="btn-gold" id="save-tag" style="padding:10px 16px">✓</button>
+                  </div>
+                </div>
+              </div>
+
+              ${u.referralCode ? `
+                <div class="ref-box">
+                  <div class="kv-label">Referal Kod</div>
+                  <div class="ref-code">
+                    ${u.referralCode}
+                    <button class="copy-btn" id="copy-ref" title="Kopyala">📋</button>
+                  </div>
+                  <div class="kv-hint">Dostunuzu dəvət edin — hər biri üçün 1 bilet qazanın</div>
+                </div>` : ''}
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-body">
+              <h2 class="section-title">Aktiv Cihazlar</h2>
+              <div class="kv-hint" style="margin-bottom:14px">
+                Bu cihazlar OTP olmadan avtomatik daxil ola bilər. Şübhəli cihazı silin.
+              </div>
+              <div id="devices-list">
+                <div class="cell-muted">Yüklənir...</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" style="border-color:rgba(255,68,68,0.2)">
+            <div class="panel-body">
+              <h2 class="section-title" style="color:var(--danger-bright)">Təhlükəsizlik</h2>
+              <div class="kv-hint" style="margin-bottom:16px">
+                Bütün cihazlardan çıxış edin. Növbəti dəfə OTP ilə yenidən daxil olmalı olacaqsınız.
+              </div>
+              <button class="btn-danger" id="logout-all">Bütün Cihazlardan Çıx</button>
+            </div>
+          </section>
+
+        </div>`;
+
+      // Tag save
+      document.getElementById('save-tag')?.addEventListener('click', async () => {
+        const tag = document.getElementById('profile-tag').value.trim();
+        if (!tag || tag.length < 2) return toast('Tag min 2 simvol', 'error');
+        try {
+          await api('/api/profile', { method: 'POST', body: { playerTag: tag } });
+          State.user.playerTag = tag;
+          toast('Yadda saxlanıldı', 'success');
+        } catch (e) { toast(e.message, 'error'); }
+      });
+
+      // Copy ref
+      document.getElementById('copy-ref')?.addEventListener('click', () => {
+        navigator.clipboard.writeText(u.referralCode || '');
+        toast('Kopyalandı', 'success', 1500);
+      });
+
+      // Logout all
+      document.getElementById('logout-all')?.addEventListener('click', async () => {
+        if (!confirm('Bütün cihazlardan çıxmaq istədiyinizə əminsiniz?')) return;
+        try {
+          await api('/api/auth/logout-all', { method: 'POST' });
+          toast('Bütün cihazlardan çıxıldı', 'success');
+          State.user = null;
+          if (State.chat.socket) { State.chat.socket.disconnect(); State.chat.socket = null; }
+          navigate('/auth');
+        } catch (e) { toast(e.message, 'error'); }
+      });
+
+      // Devices
+      try {
+        const r = await api('/api/auth/devices');
+        const list = document.getElementById('devices-list');
+        if (!r.devices.length) {
+          list.innerHTML = `<div class="cell-muted">Cihaz yoxdur</div>`;
+        } else {
+          list.innerHTML = r.devices.map((d) => `
+            <div class="device-row">
+              <div style="display:flex;gap:12px;align-items:center;min-width:0">
+                <span class="ico">📱</span>
+                <div style="min-width:0">
+                  <div class="label">${escapeHtml(d.device_label || 'Naməlum')}</div>
+                  <div class="meta">IP: ${escapeHtml(d.ip || '—')} · Son: ${new Date(d.last_seen_at).toLocaleString()}</div>
+                </div>
+              </div>
+              <button class="kill" data-id="${d.id}" title="Sil">🗑</button>
+            </div>`).join('');
+
+          list.querySelectorAll('.kill').forEach((b) => {
+            b.addEventListener('click', async () => {
+              const id = Number(b.dataset.id);
+              try {
+                await api('/api/auth/devices/' + id, { method: 'DELETE' });
+                toast('Cihaz silindi', 'success');
+                renderProfile(el);
+              } catch (e) { toast(e.message, 'error'); }
+            });
+          });
+        }
+      } catch {
+        document.getElementById('devices-list').innerHTML =
+          `<div class="cell-muted">Yüklənə bilmədi</div>`;
+      }
+    }
+
+    // ─── PROGRESS ──────────────────────────────────────────────
+    async function renderProgress(el) {
+      const u = State.user;
+      const xpForNext = Math.pow(u.level, 2) * 100;
+      const progress = Math.min(100, (u.xp / xpForNext) * 100);
+
+      el.innerHTML = `
+        <h1 class="tour-page-title" style="margin-bottom:24px">İNKİŞAF<span class="dot">.</span></h1>
+
+        <div class="level-panel" data-level="${u.level}">
+          <div class="level-eyebrow">Cari Səviyyə</div>
+          <div class="level-big">${u.level}<span class="slash">/∞</span></div>
+          <div class="progress-bar-wrap">
+            <div class="progress-meta">
+              <span>${u.xp} XP</span>
+              <span>${xpForNext} XP</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width:${progress}%"></div>
+            </div>
+            <div class="progress-hint">Növbəti səviyyəyə <b style="color:var(--accent-gold)">${xpForNext - u.xp}</b> XP qalıb</div>
+          </div>
+        </div>
+
+        <h2 class="section-title" id="ach-section-title">Nailiyyətlər</h2>
+        <div class="ach-grid" id="ach-grid">
+          <div class="cell-muted">Yüklənir...</div>
+        </div>`;
+
+      try {
+        const r = await api('/api/achievements');
+        const achs = r.achievements;
+        const unlocked = achs.filter((a) => a.unlocked).length;
+        document.getElementById('ach-section-title').textContent =
+          `Nailiyyətlər · ${unlocked}/${achs.length}`;
+
+        document.getElementById('ach-grid').innerHTML = achs.map((a) => `
+          <div class="ach-card ${a.unlocked ? 'unlocked' : 'locked'}">
+            <div class="ico">${a.icon || '🏅'}</div>
+            <div class="title">${escapeHtml(a.title)}</div>
+            <div class="desc">${escapeHtml(a.description || '')}</div>
+            <div class="xp">+${a.xp_reward} XP</div>
+            ${a.unlocked ? `<div class="date">${new Date(a.unlocked_at).toLocaleDateString()}</div>` : ''}
+          </div>`).join('');
+      } catch {
+        document.getElementById('ach-grid').innerHTML =
+          `<div class="cell-muted">Yüklənə bilmədi</div>`;
+      }
+    }
+
+    // ─── TOURNAMENTS ───────────────────────────────────────────
+    async function renderTournaments(el) {
+      el.innerHTML = `
+        <div class="tour-page-header">
+          <h1 class="tour-page-title">TURNİRLƏR<span class="dot">.</span></h1>
+          <div class="cell-muted" id="tour-count">Yüklənir...</div>
+        </div>
+        <div class="tour-grid" id="tour-grid">
+          <div class="cell-muted">Yüklənir...</div>
+        </div>`;
+
+      try {
+        const r = await api('/api/tournaments');
+        const tours = r.tournaments;
+        const openCount = tours.filter((t) => t.status === 'open').length;
+        document.getElementById('tour-count').textContent = `${openCount} aktiv`;
+
+        const grid = document.getElementById('tour-grid');
+        if (!tours.length) {
+          grid.innerHTML = `<div class="cell-muted" style="grid-column:1/-1;text-align:center;padding:60px">Hələ turnir yoxdur</div>`;
+          return;
+        }
+
+        grid.innerHTML = tours.map((t) => {
+          const full = t.players >= t.max_players;
+          const closed = t.status !== 'open';
+          const canJoin = !full && !closed;
+          const label = canJoin
+            ? `Qatıl · ${t.ticket_price} 🎫`
+            : full ? 'Doludur' : 'Bağlıdır';
+
+          return `
+            <div class="tour-card">
+              <div class="tour-head">
+                <div>
+                  <span class="tour-status ${t.status === 'open' ? 'open' : 'closed'}">${t.status}</span>
+                  <div class="tour-title">${escapeHtml(t.title)}</div>
+                  <div class="tour-sub">${escapeHtml(t.game)} · ${escapeHtml(t.mode)}</div>
+                </div>
+                <div style="color:var(--accent-gold);font-size:26px">🏆</div>
+              </div>
+
+              <div class="tour-stats">
+                <div class="tour-stat">
+                  <div class="ico">👥</div>
+                  <div class="val">${t.players}/${t.max_players}</div>
+                  <div class="lbl">Oyunçu</div>
+                </div>
+                <div class="tour-stat">
+                  <div class="ico">🎫</div>
+                  <div class="val">${t.ticket_price}</div>
+                  <div class="lbl">Bilet</div>
+                </div>
+                <div class="tour-stat">
+                  <div class="ico">💰</div>
+                  <div class="val">${t.prize_pool}</div>
+                  <div class="lbl">Mükafat</div>
+                </div>
+              </div>
+
+              ${t.starts_at ? `
+                <div class="tour-time">
+                  ⏰ ${new Date(t.starts_at).toLocaleString()}
+                </div>` : ''}
+
+              <button class="btn-gold" data-id="${t.id}" data-price="${t.ticket_price}"
+                ${canJoin ? '' : 'disabled'} style="width:100%">
+                ${label}
+              </button>
+            </div>`;
+        }).join('');
+
+        grid.querySelectorAll('button[data-id]').forEach((b) => {
+          b.addEventListener('click', async () => {
+            const id = Number(b.dataset.id);
+            const price = Number(b.dataset.price);
+            if (State.user.tickets < price) {
+              toast('Kifayət qədər biletiniz yoxdur', 'error');
+              return;
+            }
+            b.disabled = true;
+            b.textContent = 'Qatılır...';
+            try {
+              await api('/api/tournaments/join', {
+                method: 'POST', body: { tournamentId: id },
+              });
+              State.user.tickets -= price;
+              toast('Turnirə qatıldınız!', 'success');
+              updateHeaderStats();
+              renderTournaments(el);
+            } catch (e) {
+              toast(e.message, 'error');
+              b.disabled = false;
+              b.textContent = `Qatıl · ${price} 🎫`;
+            }
+          });
+        });
+      } catch (e) {
+        document.getElementById('tour-grid').innerHTML =
+          `<div class="cell-muted" style="grid-column:1/-1;text-align:center;padding:60px">Yüklənə bilmədi</div>`;
+      }
+    }
+
+    function updateHeaderStats() {
+      // Sadə header yeniləmə
+      const chips = document.querySelectorAll('.stat-chip');
+      if (chips[0]) {
+        chips[0].querySelector('.val').textContent = State.user.tickets;
+      }
+      if (chips[1]) {
+        chips[1].querySelector('.val').textContent = 'Lv.' + State.user.level;
+        chips[1].querySelector('.lbl').textContent = State.user.xp + ' XP';
+      }
+    }
+
+    // ─── CHAT ──────────────────────────────────────────────────
+    function renderChat(el) {
+      const ROOMS = [
+        { id: 'general', label: 'Ümumi' },
+        { id: 'brawl', label: 'Brawl Stars' },
+        { id: 'clash', label: 'Clash Royale' },
+        { id: 'turnir', label: 'Turnir' },
+      ];
+
+      el.innerHTML = `
+        <div class="chat-layout">
+          <aside class="rooms-panel">
+            <div class="rooms-title">Otaqlar</div>
+            ${ROOMS.map((r) => `
+              <button class="room-btn ${State.chat.room === r.id ? 'active' : ''}" data-room="${r.id}">
+                # ${r.label}
+              </button>`).join('')}
+          </aside>
+          <div class="chat-panel" id="chat-panel">
+            <div class="chat-head">
+              <div class="title"><span class="ico">#</span> <span id="room-title">${ROOMS.find((r) => r.id === State.chat.room).label}</span></div>
+              <div class="count" id="chat-count">${State.chat.messages.length} mesaj</div>
+            </div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-row">
+              <input class="input-dark" id="chat-input" maxlength="500"
+                placeholder="Mesaj yaz..." autocomplete="off" />
+              <button class="btn-gold" id="chat-send" style="padding:10px 20px">➤</button>
+            </div>
+          </div>
+        </div>`;
+
+      // Room switch
+      el.querySelectorAll('.room-btn').forEach((b) => {
+        b.addEventListener('click', () => {
+          const room = b.dataset.room;
+          if (room === State.chat.room) return;
+          State.chat.room = room;
+          State.chat.messages = [];
+          State.chat.banned = null;
+          document.getElementById('room-title').textContent = ROOMS.find((r) => r.id === room).label;
+          el.querySelectorAll('.room-btn').forEach((x) => x.classList.toggle('active', x.dataset.room === room));
+          State.chat.socket?.emit('chat:switch', room);
+          renderChatMessages();
+        });
+      });
+
+      // Send
+      const input = document.getElementById('chat-input');
+      document.getElementById('chat-send').addEventListener('click', sendChat);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendChat();
+      });
+
+      ensureChatSocket();
+      renderChatMessages();
+    }
+
+    function renderChatMessages() {
+      const wrap = document.getElementById('chat-messages');
+      if (!wrap) return;
+
+      if (State.chat.banned) {
+        wrap.innerHTML = `
+          <div class="chat-banned">
+            <div class="ico">⛔</div>
+            <div class="title">BANLANDINIZ</div>
+            <div class="desc">${escapeHtml(State.chat.banned)}</div>
+          </div>`;
+        document.querySelector('.chat-input-row')?.remove();
+        return;
+      }
+
+      const msgs = State.chat.messages;
+      if (!msgs.length) {
+        wrap.innerHTML = `<div class="cell-muted" style="text-align:center;padding:40px">Hələ mesaj yoxdur. İlk ol!</div>`;
+        return;
+      }
+
+      const myMask = State.user?.mask;
+      wrap.innerHTML = msgs.map((m) => {
+        const isAdmin = m.role === 'admin';
+        const short = (m.user || '').slice(2, 4).toUpperCase() || '??';
+        return `
+          <div class="msg">
+            <div class="msg-avatar ${isAdmin ? 'admin' : 'user'}">${short}</div>
+            <div class="msg-body">
+              <div class="msg-meta">
+                <span class="msg-user ${isAdmin ? 'admin' : 'user'}">${escapeHtml(m.user || '')}</span>
+                ${m.created_at ? `<span class="msg-time">${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>` : ''}
+              </div>
+              <div class="msg-text">${escapeHtml(m.text)}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+      wrap.scrollTop = wrap.scrollHeight;
+      const cnt = document.getElementById('chat-count');
+      if (cnt) cnt.textContent = msgs.length + ' mesaj';
+    }
+
+    function ensureChatSocket() {
+      if (State.chat.socket?.connected) return;
+
+      if (!State.chat.socket) {
+        const socket = io(API_BASE || undefined, {
+          withCredentials: true,
+          autoConnect: false,
+        });
+
+        socket.on('connect', () => {
+          socket.emit('chat:switch', State.chat.room);
+        });
+
+        socket.on('chat:history', (rows) => {
+          State.chat.messages = rows;
+          renderChatMessages();
+        });
+
+        socket.on('chat:message', (msg) => {
+          if (msg.room && msg.room !== State.chat.room) return;
+          State.chat.messages.push(msg);
+          renderChatMessages();
+        });
+
+        socket.on('chat:ban', ({ message }) => {
+          State.chat.banned = message;
+          renderChatMessages();
+        });
+
+        socket.on('connect_error', (err) => {
+          if (err.message === 'BANNED') {
+            State.chat.banned = 'Hesabınız banlıdır';
+            renderChatMessages();
+          }
+        });
+
+        State.chat.socket = socket;
+      }
+
+      if (!State.chat.socket.connected) State.chat.socket.connect();
+    }
+
+    function sendChat() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+      if (!State.chat.socket?.connected) {
+        toast('Bağlantı yoxdur', 'error');
+        return;
+      }
+      State.chat.socket.emit('chat:send', { text }, (res) => {
+        if (res?.error) {
+          State.chat.banned = res.error;
+          renderChatMessages();
+        }
+      });
+      input.value = '';
+      input.focus();
+    }
+
+    // ─── ADMIN ─────────────────────────────────────────────────
+    let adminTab = 'activities';
+
+    async function renderAdmin(el) {
+      el.innerHTML = `
+        <div class="tour-page-header">
+          <h1 class="tour-page-title">ADMIN<span class="dot">.</span></h1>
+        </div>
+
+        <div class="admin-tabs">
+          <button class="admin-tab ${adminTab === 'activities' ? 'active' : ''}" data-tab="activities">Fəaliyyətlər</button>
+          <button class="admin-tab ${adminTab === 'users' ? 'active' : ''}" data-tab="users">İstifadəçilər</button>
+          <button class="admin-tab ${adminTab === 'devices' ? 'active' : ''}" data-tab="devices">Cihazlar</button>
+          <button class="admin-tab ${adminTab === 'stats' ? 'active' : ''}" data-tab="stats">Statistika</button>
+        </div>
+
+        <div class="admin-warn">
+          ⚠ Şəxsi məlumatlar (email, telefon, şifrə) sistem tərəfindən HMAC + AES ilə şifrələnib.
+          Bu panel yalnız maskaları və hərəkətləri göstərir.
+        </div>
+
+        <div id="admin-content">
+          <div class="cell-muted" style="text-align:center;padding:40px">Yüklənir...</div>
+        </div>`;
+
+      el.querySelectorAll('.admin-tab').forEach((b) => {
+        b.addEventListener('click', () => {
+          adminTab = b.dataset.tab;
+          renderAdmin(el);
+        });
+      });
+
+      const content = document.getElementById('admin-content');
+      try {
+        if (adminTab === 'activities') {
+          const r = await api('/api/admin/activities?limit=200');
+          content.innerHTML = renderActivitiesTable(r.activities);
+        } else if (adminTab === 'users') {
+          const r = await api('/api/admin/users?limit=200');
+          content.innerHTML = renderUsersTable(r.users);
+        } else if (adminTab === 'devices') {
+          const r = await api('/api/admin/devices');
+          content.innerHTML = renderDevicesTable(r.devices);
+        } else if (adminTab === 'stats') {
+          const r = await api('/api/admin/stats');
+          content.innerHTML = `
+            <div class="stats-admin-grid">
+              ${Object.entries(r).map(([k, v]) => `
+                <div class="stats-admin-card">
+                  <div class="lbl">${k.replace('_', ' ')}</div>
+                  <div class="num">${v}</div>
+                </div>`).join('')}
+            </div>`;
+        }
+      } catch (e) {
+        content.innerHTML = `<div class="cell-muted" style="text-align:center;padding:40px">${escapeHtml(e.message)}</div>`;
+      }
+    }
+
+    function renderActivitiesTable(acts) {
+      if (!acts.length) return `<div class="cell-muted" style="text-align:center;padding:40px">Fəaliyyət yoxdur</div>`;
+      return `
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Mask</th>
+                <th>Fəaliyyət</th>
+                <th>Metadata</th>
+                <th>IP</th>
+                <th>Vaxt</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${acts.map((a) => `
+                <tr>
+                  <td class="cell-muted">${a.id}</td>
+                  <td class="cell-mask">${escapeHtml(a.mask || '—')}</td>
+                  <td><span class="action-pill ${actionClass(a.action)}">${escapeHtml(a.action)}</span></td>
+                  <td class="cell-mono">${a.metadata ? escapeHtml(JSON.stringify(a.metadata)) : '—'}</td>
+                  <td class="cell-muted">${escapeHtml(a.ip || '—')}</td>
+                  <td class="cell-muted">${new Date(a.created_at).toLocaleString()}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function actionClass(a) {
+      const known = ['register', 'login_success', 'login_fail', 'login_device', 'join_tournament', 'auto_ban_link'];
+      return known.includes(a) ? a : 'default';
+    }
+
+    function renderUsersTable(users) {
+      if (!users.length) return `<div class="cell-muted" style="text-align:center;padding:40px">İstifadəçi yoxdur</div>`;
+      return `
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Mask</th>
+                <th>Rol</th>
+                <th>Lv</th>
+                <th>XP</th>
+                <th>Bilet</th>
+                <th>Ban</th>
+                <th>Qeydiyyat</th>
+                <th>Əməliyyat</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${users.map((u) => `
+                <tr>
+                  <td class="cell-mask">${escapeHtml(u.mask)}</td>
+                  <td class="cell-muted">${escapeHtml(u.role)}</td>
+                  <td>${u.level}</td>
+                  <td>${u.xp}</td>
+                  <td>${u.tickets}</td>
+                  <td class="cell-muted">${u.banned_until ? new Date(u.banned_until).toLocaleDateString() : '—'}</td>
+                  <td class="cell-muted">${new Date(u.created_at).toLocaleDateString()}</td>
+                  <td>
+                    ${u.banned_until
+                      ? `<button class="btn-ghost" data-unban="${u.id}" style="padding:5px 10px;font-size:10px">Aç</button>`
+                      : `<button class="btn-danger" data-ban="${u.id}" style="padding:5px 10px;font-size:10px">Ban</button>`}
+                  </td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function renderDevicesTable(devs) {
+      if (!devs.length) return `<div class="cell-muted" style="text-align:center;padding:40px">Cihaz yoxdur</div>`;
+      return `
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Mask</th>
+                <th>Cihaz</th>
+                <th>IP</th>
+                <th>Son görülmə</th>
+                <th>Bitmə</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${devs.map((d) => `
+                <tr>
+                  <td class="cell-mask">${escapeHtml(d.mask || '—')}</td>
+                  <td class="cell-muted">${escapeHtml(d.device_label || '—')}</td>
+                  <td class="cell-muted">${escapeHtml(d.ip || '—')}</td>
+                  <td class="cell-muted">${new Date(d.last_seen_at).toLocaleString()}</td>
+                  <td class="cell-muted">${new Date(d.expires_at).toLocaleDateString()}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    // ─── ESCAPE HELPERS ────────────────────────────────────────
+    function escapeHtml(s) {
+      if (s === null || s === undefined) return '';
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    function escapeAttr(s) { return escapeHtml(s); }
+
+    // ─── BOOTSTRAP ─────────────────────────────────────────────
+    async function bootstrap() {
+      try {
+        // 1) Device-login cəhd
+        const res = await api('/api/auth/device-login', { method: 'POST' });
+        State.user = res.user;
+        State.page = 'app';
+      } catch (err) {
+        // 2) Cihaz yoxdur → OTP/yenidən giriş
+        if (err.status === 401 || err.status === 403) {
+          State.user = null;
+          State.page = 'auth';
+        } else {
+          // Server xətası — yenə auth
+          State.user = null;
+          State.page = 'auth';
+        }
+      }
+
+      // 3) URL-ə uyğun yönləndirmə
+      const path = currentPath();
+      if (State.user && (path === '/' || path === '/auth' || !ROUTES[path])) {
+        if (path === '/auth') navigate('/');
+      } else if (!State.user) {
+        navigate('/auth');
+      }
+
+      render();
+    }
+
+    // İlk açılış
+    if (!location.hash) location.hash = '/';
+    bootstrap();
+  </script>
+</body>
+</html>
