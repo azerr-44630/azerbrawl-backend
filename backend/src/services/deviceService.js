@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { query } from '../config/db.js';
 import { newDeviceToken, deviceLabel } from '../utils/crypto.js';
 

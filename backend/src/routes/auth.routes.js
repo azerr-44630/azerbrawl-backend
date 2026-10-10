@@ -167,9 +167,24 @@ router.delete('/devices/:id', authenticate, async (req, res, next) => {
   }
 });
 
-router.post('/logout', (_req, res) => {
-  res.clearCookie('access_token', { path: '/' });
-  res.json({ success: true });
+// === LOGOUT — TAM ÇIXIŞ ===
+router.post('/logout', async (req, res, next) => {
+  try {
+    const deviceToken = req.cookies && req.cookies.device_token;
+    if (deviceToken) {
+      const device = await deviceSvc.findDeviceByToken(deviceToken);
+      if (device) {
+        await deviceSvc.revokeDevice(device.id, device.user_id);
+      }
+    }
+
+    res.clearCookie('access_token', { path: '/' });
+    res.clearCookie('device_token', { path: '/' });
+
+    res.json({ success: true });
+  } catch (e) {
+    next(e);
+  }
 });
 
 router.post('/logout-all', authenticate, async (req, res, next) => {

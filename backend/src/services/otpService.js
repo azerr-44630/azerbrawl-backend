@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { query } from '../config/db.js';
 import { hmac } from '../utils/crypto.js';
 
