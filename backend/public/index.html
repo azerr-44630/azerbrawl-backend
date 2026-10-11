@@ -1335,6 +1335,7 @@
       '/progress': 'progress',
       '/tournaments': 'tournaments',
       '/chat': 'chat',
+  '/draft': 'draft',
       '/admin': 'admin',
     };
 
@@ -1650,6 +1651,7 @@
         { path: '/tournaments', label: 'Turnirlər', icon: '🏆' },
         { path: '/progress', label: 'İnkişaf', icon: '📈' },
         { path: '/chat', label: 'Çat', icon: '💬' },
+    { path: '/draft', label: 'Draft', icon: '⚔' },
         { path: '/profile', label: 'Profil', icon: '◉' },
       ];
 
@@ -1707,6 +1709,7 @@
         case 'progress': renderProgress(pageEl); break;
         case 'tournaments': renderTournaments(pageEl); break;
         case 'chat': renderChat(pageEl); break;
+        case 'draft': if (window.renderDraft) renderDraft(pageEl); break;
         case 'admin': renderAdmin(pageEl); break;
       }
     }
@@ -2496,5 +2499,6 @@
     if (!location.hash) location.hash = '/';
     bootstrap();
   </script>
+<script src="/draft-helper.js"></script>
 </body>
 </html>
